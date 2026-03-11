@@ -2,23 +2,30 @@ name: Build Reaper EXE
 on: [push, workflow_dispatch]
 
 jobs:
-  build:
-    runs-on: windows-latest
+  build-windows:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Configure CMake
-        # We use -A x64 to ensure it builds a 64-bit executable
-        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -A x64
+      - name: Install MinGW (Cross-Compiler)
+        run: sudo apt-get update && sudo apt-get install -y mingw-w64
 
-      - name: Build
-        run: cmake --build build --config Release
+      - name: Configure CMake for Windows
+        run: >
+          cmake -B build -S . 
+          -DCMAKE_SYSTEM_NAME=Windows 
+          -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc 
+          -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ 
+          -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build EXE
+        run: cmake --build build
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
           name: reaper-windows-bin
-          # This path points exactly to where CMake puts the exe on Windows
-          path: build/Release/reaper.exe
+          # Because we are using Linux to build, the file goes here instead of the /Release folder
+          path: build/reaper.exe
           if-no-files-found: error
