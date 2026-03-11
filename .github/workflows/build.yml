@@ -1,0 +1,17 @@
+name: Build Reaper EXE
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure CMake
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release
+      - name: Upload EXE
+        uses: actions/upload-artifact@v3
+        with:
+          name: reaper-windows-bin
+          path: build/Release/reaper.exe
