@@ -17,7 +17,8 @@ jobs:
           -DCMAKE_SYSTEM_NAME=Windows 
           -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc 
           -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ 
-          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_BUILD_TYPE=Release 
+          -DCMAKE_EXE_LINKER_FLAGS="-static"
 
       - name: Build EXE
         run: cmake --build build
@@ -26,6 +27,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: reaper-windows-bin
-          # Because we are using Linux to build, the file goes here instead of the /Release folder
           path: build/reaper.exe
           if-no-files-found: error
