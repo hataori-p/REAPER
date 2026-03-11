@@ -5,13 +5,20 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
       - name: Configure CMake
-        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+        # We use -A x64 to ensure it builds a 64-bit executable
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -A x64
+
       - name: Build
         run: cmake --build build --config Release
+
       - name: Upload EXE
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: reaper-windows-bin
+          # This path points exactly to where CMake puts the exe on Windows
           path: build/Release/reaper.exe
+          if-no-files-found: error
